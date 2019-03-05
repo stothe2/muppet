@@ -43,8 +43,8 @@ Inspired from [Ha's](https://github.com/hahong) [project](https://github.com/hah
        |                v          v           v
        |    +-----------------------------------------------+
        |    | muppet-clean_up --config=<.ini file name>     |
-       +--> |   combine invidual spike files and delete     |
-            |   any intermediate genrated files             |
+       +--> |   combine individual spike files and delete   |
+            |   any intermediate generated files            |
             +----------------------+------------------------+
                                    |
                                    v
