@@ -1,5 +1,7 @@
 # MUPPET (Multi-Unit Processing Pipeline: Experiment to Tests)
 
+Inspired from [Ha's](https://github.com/hahong) [project](https://github.com/hahong/maru).
+
 ## Usage
 
 ```
