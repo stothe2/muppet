@@ -86,7 +86,7 @@ def main(project_dir, date, channel):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Muli-unit activity analysis tools.')
+    parser = argparse.ArgumentParser(description='Multi-unit activity analysis tools.')
     parser.add_argument('num', metavar='N', type=int,
                         help='channel number or slurm job array id')
     # TODO: Think of a better way to get access to this information than re-reading config

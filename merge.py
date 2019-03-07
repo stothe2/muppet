@@ -144,7 +144,8 @@ def main():
         assert parameters['n_channels'] == len(parameters['neuroid']['neuroid_id'])
 
         # Get information on number of trials from MWorks data.
-        behavior_data = loadmat(os.path.join(config['File IO']['project_dir'], 'mworksproc', mfiles[i]), squeeze_me=True)
+        behavior_data = loadmat(os.path.join(config['File IO']['project_dir'], 'mworksproc', mfiles[i]),
+                                squeeze_me=True)
         fixation_correct = behavior_data['fixation_correct']
         image_order = behavior_data['image_order']
 

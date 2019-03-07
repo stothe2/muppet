@@ -16,9 +16,9 @@ def main(project_dir, date):
     # Loop through each directory, and clean up.
     for d in dirs:
         # Check if the parameters file---where all data is going to be stored---exists.
-        assert os.path.isfile('parameters.json')  # TODO: Change this to a braintree location
+        assert os.path.isfile(os.path.join(project_dir, 'proc', d + '_parameters.json'))
 
-        with open('parameters.json') as f:
+        with open(os.path.join(project_dir, 'proc', d + '_parameters.json')) as f:
             parameters = json.load(f)
 
         # Check if the temp folder where all the individual spike files live exists.
@@ -56,7 +56,7 @@ def main(project_dir, date):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Muli-unit activity analysis tools.')
+    parser = argparse.ArgumentParser(description='Multi-unit activity analysis tools.')
     # TODO: Think of a better way to get access to this information than re-reading config
     parser.add_argument('--config', type=str, help='full path and name of the .ini file '
                                                    'defining the experiment parameters')
