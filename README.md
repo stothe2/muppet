@@ -48,7 +48,31 @@ Inspired from [Ha's](https://github.com/hahong) [project](https://github.com/hah
             +----------------------+------------------------+
                                    |
                                    v
-                               (data.json)              
+                            (session_data.json)
+                                   |
+                                   |
+                                   |
+                                   .
+                                   .  x n_sessions
+                                   .
+                                   V
+            +-------------------------------------------------------------+
+            | muppet-concat <file_1.json> <file_2.json> ... <file_n.json> |
+            |   combines individual session files into a single file      |
+            +----------------------+--------------------------------------+
+                                   |
+                                   V
+                            (experiment_data.json)
+                                   |
+                                   V
+            +-------------------------------------------------------+
+            | muppet-concat --data <.json file name>                |
+            |   runs metrics on the data and saves output in a      |
+            |   `passed_metrics` variable in the original data file |
+            +----------------------+--------------------------------+
+                                   |
+                                   V
+                            (experiment_data.json)
 ```
 
 ## Data file
