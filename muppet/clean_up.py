@@ -2,7 +2,7 @@ import os
 import argparse
 import configparser
 import json
-from utilities import natural_sorting
+from muppet.utilities import natural_sorting
 import shutil
 
 
@@ -36,12 +36,8 @@ def main(project_dir, date):
         for file in spk_files:
             with open(os.path.join(project_dir, 'temp', d, file)) as f:
                 spk_data = json.load(f)
-                assert 'spikes' in spk_data
-                assert 'baseline' in spk_data
-                for key, value in spk_data['spikes'].items():
+                for key, value in spk_data.items():
                     parameters['spikes'][key] = value
-                for key, value in spk_data['baseline'].items():
-                    parameters['baseline']['spikes'][key] = value
             os.remove(os.path.join(project_dir, 'temp', d, file))
 
         with open(os.path.join(project_dir, 'proc', d + '_data.json'), 'w') as f:

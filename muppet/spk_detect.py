@@ -2,7 +2,8 @@ import argparse
 import configparser
 import os
 import json
-from utilities import natural_sorting, apply_bandpass, read_dat
+from muppet.utilities import natural_sorting, apply_bandpass
+from muppet.io import read_dat
 from numpy import ceil, arange, nanmean, median, abs, array, concatenate, diff, nonzero
 
 
@@ -55,19 +56,12 @@ def main(project_dir, date, channel):
             idxs = nonzero(cross)[0]
             spike_times.extend(time_idxs[idxs])
 
-        # Create placeholders for spikes and baseline data.
-        spk_data = {}
-        spk_data['spikes'] = {}
-        spk_data['spikes'][parameters['neuroid']['neuroid_id'][channel]] = {}
-        spk_data['baseline'] = {}
-        spk_data['baseline'][parameters['neuroid']['neuroid_id'][channel]] = {}
-
-        # spk_data = {
-        #     parameters['neuroid']['neuroid_id'][channel]: {}
-        # }
+        spk_data = {
+            parameters['neuroid']['neuroid_id'][channel]: {}
+        }
         # Loop through each image.
         for i, item in parameters['item']['id'].items():
-            spk_data['spikes'][parameters['neuroid']['neuroid_id'][channel]][str(item)] = {}
+            spk_data[parameters['neuroid']['neuroid_id'][channel]][str(item)] = {}
             # Loop through each trial.
             for trial in range(parameters['n_trials']):
                 spikes = list(filter(lambda x: x >= parameters['trial_times'][str(item)][str(trial+1)] -
@@ -76,20 +70,7 @@ def main(project_dir, date, channel):
                                      parameters['stop_time'], spikes))  # TODO: Better way to do this
                 # Align spikes to stimulus onset (SO)
                 spikes = [_ - parameters['trial_times'][str(item)][str(trial+1)] for _ in spikes]
-                spk_data['spikes'][parameters['neuroid']['neuroid_id'][channel]][str(item)][str(trial+1)] = spikes
-
-        # Loop through each baseline image.
-        for baseline_image in parameters['baseline']['trial_times'].keys():
-            spk_data['baseline'][parameters['neuroid']['neuroid_id'][channel]][str(baseline_image)] = {}
-            # Loop through each trial.
-            for trial in range(parameters['n_trials']):
-                spikes = list(filter(lambda x: x >= parameters['baseline']['trial_times'][str(baseline_image)][str(trial + 1)] -
-                                               parameters['start_time'], spike_times))  # TODO: Add check for +- sign
-                spikes = list(filter(lambda x: x <= parameters['baseline']['trial_times'][str(baseline_image)][str(trial + 1)] +
-                                               parameters['stop_time'], spikes))  # TODO: Better way to do this
-                # Align spikes to stimulus onset (SO)
-                spikes = [_ - parameters['baseline']['trial_times'][str(baseline_image)][str(trial + 1)] for _ in spikes]
-                spk_data['baseline'][parameters['neuroid']['neuroid_id'][channel]][str(baseline_image)][str(trial + 1)] = spikes
+                spk_data[parameters['neuroid']['neuroid_id'][channel]][str(item)][str(trial+1)] = spikes
 
         # Make temp directory if it does not exist.
         if not os.path.isdir(os.path.join(project_dir, 'temp')):

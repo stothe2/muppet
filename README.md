@@ -80,7 +80,13 @@ Fields
     * `neuroid_id`
         * `item`
             * `trial`
-* `baseline` Spike times for baseline images (in sec)
+* `baseline`
+    * `n_grey` Number of blank items used for baseline correction
+    * `n_other` Number of other items used for baseline correction
+    * `spikes` Spike times for baseline images, aligned to stimulus onset (in sec)
+        * `neuroid_id`
+            * `item`
+                * `trial`
 * `threshold_sd` Threshold for detection
 * `chunks_for_threshold` Number of chunks used to determine threshold for detection
 * `f_low` Low pass frequency
@@ -88,3 +94,12 @@ Fields
 * `ellip_order` Order of elliptic filter
 * `start_time` Time before stimulus onset when looking for spikes (in sec)
 * `stop_time` Time after stimulus onset when looking for spikes (in sec)
+* `stim_on_time` Length of time the stimulus was displayed for (in ms)
+* `stim_off_time` Inter-stimulus interval (in ms)
+* `stim_on_delay` Delay time from start of fixation until start of a trial (in ms)
+* `inter_trial_interval` Inter-trial interval (in ms)
+* `stim_size` Size of the stimulus (in degrees of visual angle)
+* `fixation_point_size` Size of the fixation point (in degrees of visual angle)
+* `fixation_window_size` Size of the fixation window (in degrees of visual angle)
+* `passed_metrics` Boolean value for each neuroid indicating whether it passed our quality checks or not.
+    * `neuroid_id`

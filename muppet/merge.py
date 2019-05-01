@@ -2,10 +2,11 @@ import configparser
 import argparse
 import os
 import re
+from muppet.io import read_rhd
 from scipy.io import loadmat
 from numpy import where, bincount, fromfile, nonzero
 import json
-from utilities import natural_sorting, read_rhd
+from muppet.utilities import natural_sorting
 
 
 def main():
@@ -33,7 +34,6 @@ def main():
     assert config.has_section('Detection')
     # TODO: Use waveform information...
     assert config.has_section('Waveform')
-    assert config.has_section('Baseline')
 
     # Check if the necessary options are present in the configuration file.
     assert config.has_option('Experiment Information', 'experiment_name')
@@ -52,8 +52,6 @@ def main():
     assert config.has_option('Detection', 'stop_time')
     assert config.has_option('Waveform', 't_before')
     assert config.has_option('Waveform', 't_after')
-    assert config.has_option('Baseline', 'n_grey')
-    assert config.has_option('Baseline', 'n_other')
 
     # Check if necessary options are not None.
     # TODO: Checks for all variables, or just necessary ones?
@@ -71,8 +69,6 @@ def main():
     assert config['Detection']['stop_time'] is not None
     assert config['Waveform']['t_before'] is not None
     assert config['Waveform']['t_after'] is not None
-    assert config['Baseline']['n_grey'] is not None
-    assert config['Baseline']['n_other'] is not None
 
     # Check if project directory exists.
     assert os.path.isdir(config['File IO']['project_dir'])
@@ -150,8 +146,6 @@ def main():
         # Get information on number of trials from MWorks data.
         behavior_data = loadmat(os.path.join(config['File IO']['project_dir'], 'mworksproc', mfiles[i]),
                                 squeeze_me=True)
-        assert 'fixation_correct' in behavior_data.keys()
-        assert 'image_order' in behavior_data.keys()
         fixation_correct = behavior_data['fixation_correct']
         image_order = behavior_data['image_order']
 
@@ -164,22 +158,11 @@ def main():
 
         parameters['n_trials'] = int(most_frequent_rep_num)  # Convert from numpy.int64 to int for JSON serialization
 
-        # Get information on experiment settings from MWorks data.
-        assert 'meta' in behavior_data.keys()
-        parameters['stim_on_time'] = behavior_data['meta']['stim_on_time'].item()
-        parameters['stim_off_time'] = behavior_data['meta']['stim_off_time'].item()
-        parameters['stim_on_delay'] = behavior_data['meta']['stim_on_delay'].item()
-        parameters['inter_trial_interval'] = behavior_data['meta']['inter_trial_interval'].item()
-        parameters['stim_size'] = behavior_data['meta']['stim_size'].item()
-        parameters['fixation_point_size'] = behavior_data['meta']['fixation_point_size'].item()
-        parameters['fixation_window_size'] = behavior_data['meta']['fixation_window_size'].item()
-
         # Create a "spikes" field in the parameters dictionary so it can be populated easily later.
         parameters['spikes'] = {}
 
         # Create a "baseline" field in the parameters dictionary so it can be populated easily later.
         parameters['baseline'] = {}
-        parameters['baseline']['spikes'] = {}
 
         # Get all trial time information.
         filename = os.path.join(config['File IO']['project_dir'], 'intanraw', d,
@@ -204,27 +187,6 @@ def main():
             rows = where((image_order == item) & (fixation_correct == 1))[0]
             for trial in range(parameters['n_trials']):
                 parameters['trial_times'][item][trial+1] = samp_on[rows[trial]]  # +1 to get around zero-indexing
-
-        # Store baseline metadata.
-        # TODO: Add stimulus category names information
-        parameters['baseline']['n_grey'] = config.getint('Baseline', 'n_grey')
-        parameters['baseline']['n_other'] = config.getint('Baseline', 'n_other')
-
-        # Check whether item IDs are zero-indexed or not, because that will affect how we compute
-        # the IDs for baseline images.
-        is_zero_indexed = False
-        if parameters['item']['id']['0'] == 0:
-            is_zero_indexed = True
-
-        # Store trial time data for baseline images.
-        parameters['baseline']['trial_times'] = {}
-        for baseline_item in range(len(parameters['item']['id']) + int(not is_zero_indexed),
-                                   len(parameters['item']['id']) + parameters['baseline']['n_grey']
-                                   + parameters['baseline']['n_other'] + int(not is_zero_indexed)):
-            parameters['baseline']['trial_times'][baseline_item] = {}
-            rows = where((image_order == baseline_item) & (fixation_correct == 1))[0]
-            for trial in range(parameters['n_trials']):
-                parameters['baseline']['trial_times'][baseline_item][trial+1] = samp_on[rows[trial]]  # +1 to get around zero-indexing
 
         # Store all params in the parameters dict too so that methods that work on top of it know where to look
         # without accessing the config file.

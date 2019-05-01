@@ -1,10 +1,8 @@
 import re
-import os
-import sys
-import struct
-import json
 from scipy import signal
 from numpy import fromfile
+import os
+import struct
 
 
 def _convert(text):
@@ -205,10 +203,3 @@ def read_rhd(fid):
     header['num_board_dig_out_channels'] = len(header['board_dig_out_channels'])
 
     return header
-
-
-def read_json(file):
-    assert os.path.isfile(file)
-    assert file.lower().endswith('.json')
-    with open(file) as f:
-        return json.load(f)
