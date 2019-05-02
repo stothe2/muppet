@@ -66,7 +66,7 @@ Inspired from [Ha's](https://github.com/hahong) [project](https://github.com/hah
                                    |
                                    V
             +-------------------------------------------------------+
-            | muppet-concat --data <.json file name>                |
+            | muppet-add_metrics --data <.json file name>           |
             |   runs metrics on the data and saves output in a      |
             |   `passed_metrics` variable in the original data file |
             +----------------------+--------------------------------+
