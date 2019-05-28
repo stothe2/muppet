@@ -85,6 +85,27 @@ def main(files):
     # Merge the number of trials.
     concatenated_data['n_trials'] = sum(session_data['n_trials'] for session_data in data)
 
+    # Create a grouping_idx field so it is easy to identify which trials were run on which days
+    # for normalization purposes.
+    grouping_dates = []  # Temporary list of dates used to compute groupings
+    grouping = []  # This is initially a list of n_trials per date (combines different sessions run on same day)
+    for session_data in data:
+        if session_data['date'] in grouping_dates:
+            grouping[grouping_dates.index(session_data['date'])] += session_data['n_trials']
+        else:
+            grouping_dates.append(session_data['date'])
+            grouping.append(session_data['n_trials'])
+    # We update the grouping variable so now it stores a list of indexes that can be used to select
+    # appropriate coordinates from the trial dimension of a PSTH XArray.
+    for i, group in enumerate(grouping):
+        group = list(range(group))
+        print(group)
+        if i != 0:
+            group = [_ + grouping[i-1][-1] + 1 for _ in group]
+        grouping[i] = group
+    assert len(grouping) == len(concatenated_data['date'].split(','))
+    concatenated_data['grouping_idx'] = grouping
+
     # Merge spikes.
     # TODO: a more efficient way?
     concatenated_data['spikes'] = {}
