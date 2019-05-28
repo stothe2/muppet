@@ -127,3 +127,5 @@ Fields
 * `fixation_window_size` Size of the fixation window (in degrees of visual angle)
 * `passed_metrics` Boolean value for each neuroid indicating whether it passed our quality checks or not.
     * `neuroid_id`
+* `grouping_idx` A list of _n_ lists (where _n_ is number of dates/sessions), to keep track of which trials\
+were recorded on which dates/sessions (important for normalizing if data collected across multiple dates\sessions).
